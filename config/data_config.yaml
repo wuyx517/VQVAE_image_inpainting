@@ -1,0 +1,31 @@
+data_config:
+  data_set: ''  # dataset of the experiment
+  train_flist: './data_txt/train_list.txt'
+  valid_flist: './data_txt/val_list.txt'
+  load_size: 64 # scale images to this size.
+  image_size: 64 # then random crop to this size.
+
+  random_mask: False
+  mask_size: 128
+  max_delta: 0
+  margins: 0
+
+learning_config:
+  running_config:
+    outdir: './ckpt'
+    vqvae_checkpoints_dir: './ckpt/vqvae'
+    sg_ckp_dir: './ckpt/sg'
+    batch_size: 1
+    learning_rate: 1e-4
+    max_steps: 1000000
+    val_steps: 10000
+    train_spe: 10000
+    ema_decay: 0.9997
+    train_steps_per_batches: 10
+    eval_steps_per_batches: 1
+    log_interval_steps: 100
+    save_interval_steps: 100
+    eval_interval_steps: 100
+
+    dropout_s: 0.1
+

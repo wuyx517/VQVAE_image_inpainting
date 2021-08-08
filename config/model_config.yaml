@@ -1,0 +1,35 @@
+vqvae:
+  nr_channel_vq: 128 # number of channels in VQVAE.
+  nr_res_block_vq: 2 # number of residual blocks in VQVAE.
+  nr_res_channel_vq: 64 # number of channels in the residual block in VQVAE.
+
+  embedding_dim: 64 # number of the dimensions of embeddings in vector quantizer.
+  num_embeddings: 512 # number of embeddings in vector quantizer.
+  commitment_cost: 0.25 # weight of commitment loss in vector quantizer.
+  decay: 0.99 # decay of EMA updates in vector quantizer.
+
+  nr_channel_s: 128
+  nr_res_channel_s: 128
+  nr_resnet_s: 20
+  nr_resnet_out_s: 20
+  nr_attention_s: 4
+  nr_head_s: 8
+  nr_channel_cond_s: 32
+  nr_res_channel_cond_s: 32
+
+texture:
+  fea_loss_weight: 0.1
+
+
+optimizer_config:
+  current_opt: 'Adamax'
+  Adamax:
+    learning_rate: 0.0002
+    beta_1: 0.9
+    beta_2: 0.99
+    epsilon: 0.00000001
+  Adam:
+    learning_rate: 0.0002
+    beta_1: 0.9
+    beta_2: 0.99
+    epsilon: 0.00000001
