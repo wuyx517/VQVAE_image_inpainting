@@ -2,19 +2,19 @@ import tensorflow as tf
 from model.layer import GatedConv2d, attention_transfer, GatedDeconv2d
 
 
-class TextureGeneratorSpec(tf.keras.layers.Layer):
+class TextureGeneratorSpec(tf.keras.Model):
     def __init__(self, nr_channel=64, **kwargs):
         super().__init__(**kwargs)
         self.nr_channel = nr_channel
         # Encoder
         self.rt_conv_1 = GatedConv2d(num_filters=nr_channel, filter_size=(5, 5), stride=(1, 1))
         self.rt_conv_2 = GatedConv2d(num_filters=nr_channel*2, filter_size=(3, 3), stride=(2, 2))
-        self.rt_conv_3 = GatedConv2d(num_filters=nr_channel*3, filter_size=(3, 3), stride=(2, 2))
+        self.rt_conv_3 = GatedConv2d(num_filters=nr_channel*2, filter_size=(3, 3), stride=(1, 1))
         self.rt_conv_4 = GatedConv2d(num_filters=nr_channel*4, filter_size=(3, 3), stride=(2, 2))
         # Upsample structure feature maps (with quantization)
         self.rt_conv_5 = GatedConv2d(num_filters=nr_channel * 4, filter_size=(3, 3), stride=(1, 1))
         self.rt_conv_6 = GatedConv2d(num_filters=nr_channel * 4, filter_size=(3, 3), stride=(1, 1))
-        self.rt_conv_7 = GatedDeconv2d(num_filters=nr_channel * 4)
+        self.rt_deconv_7 = GatedDeconv2d(num_filters=nr_channel * 4, stride=(2, 2))
         self.rt_conv_8 = GatedConv2d(num_filters=nr_channel * 4, filter_size=(3, 3), stride=(1, 1))
         self.rt_conv_9 = GatedConv2d(num_filters=nr_channel * 4, filter_size=(3, 3), stride=(1, 1))
         self.rt_conv_10 = GatedConv2d(num_filters=nr_channel * 4, filter_size=(3, 3), stride=(1, 1), rate=2)
@@ -27,11 +27,11 @@ class TextureGeneratorSpec(tf.keras.layers.Layer):
         self.rt_conv_14 = GatedConv2d(num_filters=nr_channel * 4, filter_size=(3, 3), stride=(1, 1))
         self.rt_conv_15 = GatedConv2d(num_filters=nr_channel * 4, filter_size=(3, 3), stride=(1, 1))
         self.rt_conv_16 = GatedConv2d(num_filters=nr_channel * 4, filter_size=(3, 3), stride=(1, 1))
-        self.rt_deconv_1 = GatedDeconv2d(num_filters=nr_channel * 2)
+        self.rt_deconv_1 = GatedDeconv2d(num_filters=nr_channel * 2, stride=(2, 2))
         self.rt_conv_17 = GatedConv2d(num_filters=nr_channel * 2, filter_size=(3, 3), stride=(1, 1))
-        self.rt_deconv_2 = GatedDeconv2d(num_filters=nr_channel)
+        self.rt_deconv_2 = GatedDeconv2d(num_filters=nr_channel, stride=(2, 2))
         self.rt_conv_18 = GatedConv2d(num_filters=nr_channel, filter_size=(3, 3), stride=(1, 1))
-        self.conv = tf.keras.layers.Conv2D(3, (3, 3), strides=(1, 1), activation='tanh')
+        self.conv = tf.keras.layers.Conv2D(3, (3, 3), strides=(1, 1), activation='tanh', padding='SAME')
 
     def _build(self, sample_shape):
         features1 = tf.random.normal(shape=sample_shape[0])
@@ -54,7 +54,7 @@ class TextureGeneratorSpec(tf.keras.layers.Layer):
         # Upsample structure feature maps (with quantization)
         x_s = self.rt_conv_5(s)
         x_s = self.rt_conv_6(x_s)
-        x_s = self.rt_conv_7(x_s)
+        x_s = self.rt_deconv_7(x_s)
         pl2 = tf.concat([pl2, x_s], axis=-1)
         pl2 = self.rt_conv_8(pl2)
         pl2 = self.rt_conv_9(pl2)
@@ -80,14 +80,14 @@ class TextureGeneratorSpec(tf.keras.layers.Layer):
         return x
 
 
-class TextureDiscriminatorSpec(tf.keras.layers.Layer):
+class TextureDiscriminatorSpec(tf.keras.Model):
     def __init__(self, nr_channel=64, name='TextureDiscriminatorSpec', **kwargs):
         super().__init__(name=name, **kwargs)
         nr_channel_list = [1, 2, 4, 4, 4, 4]
         self.snconv_list = []
         for nr in nr_channel_list:
-            single_conv = tf.keras.layers.Conv2D(nr_channel * nr, 5, strides=(2, 2), activation='leaky_relu',
-                                                 kernel_initializer='TruncatedNormal')
+            single_conv = tf.keras.layers.Conv2D(nr_channel * nr, 5, strides=(2, 2), activation='LeakyReLU',
+                                                 kernel_initializer='TruncatedNormal', padding='SAME')
             self.snconv_list.append(single_conv)
         self.flatten = tf.keras.layers.Flatten()
 

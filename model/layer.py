@@ -41,7 +41,7 @@ class GatedDeconv2d(tf.keras.layers.Layer):
         return x
 
 
-def attention_transfer(f, b1, b2, ksize=3, stride=1, fuse_k=3, softmax_scale=50., fuse=False):
+def attention_transfer(f, b1, b2, ksize=2, stride=1, fuse_k=3, softmax_scale=50., fuse=False):
     # extract patches from background feature maps with rate (1st scale)
     bs1 = tf.shape(b1)
     int_bs1 = b1.get_shape().as_list()
@@ -96,6 +96,11 @@ def attention_transfer(f, b1, b2, ksize=3, stride=1, fuse_k=3, softmax_scale=50.
 
         # softmax to match
         yi = tf.nn.softmax(yi * scale, 3)
+
+        # 加入一维卷积, 改变channel
+
+        one_like = tf.ones([1, 1, yi.shape[-1], raw1_wi.shape[-1]])
+        yi = tf.nn.conv2d(yi, one_like, strides=1, padding='SAME')
 
         wi_center1 = raw1_wi[0]
         wi_center2 = raw2_wi[0]

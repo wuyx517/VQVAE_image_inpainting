@@ -28,7 +28,7 @@ class TextureGeneratorTrain(Base_Train):
         mask = regular_mask
         self.config = config
         self.gen = TextureGeneratorSpec()
-        self.dis = TextureDiscriminatorSpec
+        self.dis = TextureDiscriminatorSpec()
         self.data_loader = VQVAE_DataLoader(config, mask=mask)
         self.data_loader.is_mask = True
         self.data_loader.load_state(self.config['learning_config']['running_config']['vqvae_checkpoints_dir'])

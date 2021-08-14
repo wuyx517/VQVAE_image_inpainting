@@ -43,10 +43,10 @@ class VectorQuantizer(tf.keras.layers.Layer):
         # inputs = tf.transpose(inputs, perm=[0, 2, 3, 1])
         inputs_flattened = tf.reshape(inputs, [-1, self.emb_dim])
 
-        # distances = (tf.math.reduce_sum(inputs_flattened ** 2, 1, keepdims=True)
-        #              - 2 * tf.matmul(inputs_flattened, tf.transpose(self.w))
-        #              + tf.math.reduce_sum(self.w ** 2, 1))
-        distances = 2 * tf.matmul(inputs_flattened, tf.transpose(self.w))
+        distances = (tf.math.reduce_sum(inputs_flattened ** 2, 1, keepdims=True)
+                     - 2 * tf.matmul(inputs_flattened, tf.transpose(self.w))
+                     + tf.math.reduce_sum(tf.transpose(self.w) ** 2, 0, keepdims=True))
+        # distances = 2 * tf.matmul(inputs_flattened, tf.transpose(self.w))
 
         encodings_indices = tf.argmax(-distances, 1)
         quantized = tf.nn.embedding_lookup(self.w, encodings_indices)
@@ -55,7 +55,7 @@ class VectorQuantizer(tf.keras.layers.Layer):
         loss = self.beta * e_latent_loss
         quantized = inputs + tf.stop_gradient(quantized - inputs)
 
-        return quantized, loss, encodings_indices, self.w
+        return quantized, loss, encodings_indices, tf.transpose(self.w)
 
 
 class Encoder(tf.keras.layers.Layer):
