@@ -24,7 +24,8 @@ class TextureTrainer(BaseTrainer):
 
     def set_eval_metrics(self):
         self.eval_metrics = {
-            'total_loss': tf.keras.metrics.Mean('eval_total_loss', dtype=tf.float32),
+            'gen_loss': tf.keras.metrics.Mean('eval_total_loss', dtype=tf.float32),
+            'dis_loss': tf.keras.metrics.Mean('eval_total_loss', dtype=tf.float32)
         }
 
 
