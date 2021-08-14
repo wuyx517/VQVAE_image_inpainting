@@ -35,8 +35,6 @@ python structure_generator.py
 python texture_generator.py
 ```
 
-ps: 目前 texture_generator.py 尚有一些问题未进行修复。
-
 ### 留言
 
 由于复现时间较为匆忙，有很多细节性的东西尚未修复，而且 **Inference Pipeline** 也尚未完成（定个小目标，2021.8.15前全部完成）。
