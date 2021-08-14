@@ -45,5 +45,5 @@ ps: 目前 texture_generator.py 尚有一些问题未进行修复。
 
 
 
-<img src="D:\Dorport\image inpainting\VQVAE_image_inpainting\image\image-20210809024628423.png" alt="image-20210809024628423" style="zoom:500%;" />
+<img src="./image/image-20210809024628423.png" alt="image-20210809024628423" style="zoom:500%;" />
 
