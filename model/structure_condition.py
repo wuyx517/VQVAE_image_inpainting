@@ -292,7 +292,7 @@ class Structure(tf.keras.Model):
     def _build(self, sample_shape):
         features1 = tf.random.normal(shape=sample_shape[0])
         features2 = tf.random.normal(shape=sample_shape[1])
-        self([features1, features2], training=False)
+        self([features1, features2], training=True)
 
     def call(self, inputs, training=None, mask=None):
         masked = inputs[0]

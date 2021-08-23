@@ -15,6 +15,8 @@ class TextureTrainer(BaseTrainer):
         self.num_embeddings = num_embeddings
         self.fea_loss_weight = fea_loss_weight
         super(TextureTrainer, self).__init__(config=config)
+        self.gen_checkpoint_dir = os.path.join(self.config["texture_gen_ckp_dir"], "checkpoints")
+        self.dis_checkpoint_dir = os.path.join(self.config["texture_dis_ckp_dir"], "checkpoints")
 
     def set_train_metrics(self):
         self.train_metrics = {
@@ -152,4 +154,21 @@ class TextureTrainer(BaseTrainer):
             self.epochs = epoch
         self._train_batches()
         self._check_eval_interval()
+
+    def save_checkpoint(self, max_save=10):
+        """Save checkpoint."""
+        if not os.path.exists(self.gen_checkpoint_dir):
+            os.makedirs(self.gen_checkpoint_dir)
+        if not os.path.exists(self.dis_checkpoint_dir):
+            os.makedirs(self.dis_checkpoint_dir)
+        # self.model.save_weights(os.path.join(self.checkpoint_dir, 'model_{}.h5'.format(self.steps)))
+        self.train_progbar.set_postfix_str("Successfully Saved Checkpoint")
+        if len(os.listdir(self.gen_checkpoint_dir)) > max_save:
+            files = os.listdir(self.gen_checkpoint_dir)
+            files.sort(key=lambda x: int(x.split('_')[-1].replace('.h5', '')))
+            os.remove(os.path.join(self.gen_checkpoint_dir, files[0]))
+        if len(os.listdir(self.dis_checkpoint_dir)) > max_save:
+            files = os.listdir(self.dis_checkpoint_dir)
+            files.sort(key=lambda x: int(x.split('_')[-1].replace('.h5', '')))
+            os.remove(os.path.join(self.dis_checkpoint_dir, files[0]))
 

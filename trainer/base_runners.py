@@ -21,6 +21,7 @@ class BaseRunner():
         self.config = config
         self.outdir = self.config["outdir"]
         self.config["outdir"] = preprocess_paths(self.outdir)
+        self.checkpoint_dir = os.path.join(self.config["outdir"], "checkpoints")
         # Writers
         self.train_writer = tf.summary.create_file_writer(
             os.path.join(self.outdir, "tensorboard", "train")
@@ -118,10 +119,9 @@ class BaseTrainer(BaseRunner):
 
     def save_checkpoint(self, max_save=10):
         """Save checkpoint."""
-        self.checkpoint_dir = os.path.join(self.config["outdir"], "checkpoints")
         if not os.path.exists(self.checkpoint_dir):
             os.makedirs(self.checkpoint_dir)
-        # self.model.save_weights(os.path.join(self.checkpoint_dir, 'model_{}.h5'.format(self.steps)))
+        self.model.save_weights(os.path.join(self.checkpoint_dir, 'model_{}.h5'.format(self.steps)))
         self.train_progbar.set_postfix_str("Successfully Saved Checkpoint")
         if len(os.listdir(self.checkpoint_dir)) > max_save:
             files = os.listdir(self.checkpoint_dir)

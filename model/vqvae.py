@@ -40,13 +40,15 @@ class VectorQuantizer(tf.keras.layers.Layer):
         super(VectorQuantizer, self).build(input_shape)
 
     def call(self, inputs, is_training=True, **kwargs):
-        # inputs = tf.transpose(inputs, perm=[0, 2, 3, 1])
+        """
+        向量量化，VQ-VAE中的操作。旨在用codebook中与输入向量最相近的向量代替。旨在化连续为离散
+        """
+        # 将 [B, W, H, C] 的向量转换为 二维的向量，二维向量的每一行代表着input中, 一个单独的像素点的vector
         inputs_flattened = tf.reshape(inputs, [-1, self.emb_dim])
-
+        # 求解所有像素点与codebook中点的距离，这里面采用欧式距离
         distances = (tf.math.reduce_sum(inputs_flattened ** 2, 1, keepdims=True)
                      - 2 * tf.matmul(inputs_flattened, tf.transpose(self.w))
                      + tf.math.reduce_sum(tf.transpose(self.w) ** 2, 0, keepdims=True))
-        # distances = 2 * tf.matmul(inputs_flattened, tf.transpose(self.w))
 
         encodings_indices = tf.argmax(-distances, 1)
         quantized = tf.nn.embedding_lookup(self.w, encodings_indices)

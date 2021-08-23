@@ -38,7 +38,7 @@ class StructureGeneratorTrain(Base_Train):
         vae_model._build([1, 64, 64, 3])
         vae_model = load_checkpoint(vae_model, vae_checkpoint_dir)
         vae_encoder = vae_model.encoder
-        self.runner = StructureTrainer(config['learning_config']['running_config'], mask=mask, vae_model=vae_encoder,
+        self.runner = StructureTrainer(config, mask=mask, vae_model=vae_encoder,
                                        num_embeddings=config['vqvae']['num_embeddings'])
         self.opt = self.load_opt()
         self.runner.set_total_train_steps(
